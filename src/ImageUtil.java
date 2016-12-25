@@ -1,21 +1,21 @@
 /* Nikolas Gaub
  * 
  * This is a utility class containing methods which load and/or manipulate images.
- * this should really be built into java already.
+ * This should really be built into java already. Or at least standardized.
  */
 
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-
 
 public class ImageUtil {
 	
@@ -23,6 +23,9 @@ public class ImageUtil {
 	 * Loads an image contained inside of a project. Returns a blank 100x100 image if 
 	 * IO exception is caught. 
 	 * For classInProject, pass in the .class of a class from your project (i.e. FooBar.class)
+	 * The reason for classInProject is to obtain a starting point for the string path.
+	 * The image loaded is contained inside the JAR of the project, and therefore the easiest way to find
+	 * said jar is to take the class's URL, using getResource.
 	 */
 	public static BufferedImage loadImage(String pathFromSrc, Class classInProject) {
 		BufferedImage image;
@@ -40,6 +43,9 @@ public class ImageUtil {
 	 * Loads an image contained inside of a project, and scales to the input width/height. Returns blank image of 
 	 * width and height passed in if image is not found.
 	 * For classInProject, pass in the .class of a class from your project (i.e. FooBar.class)
+	 * The reason for classInProject is to obtain a starting point for the string path.
+	 * The image loaded is contained inside the JAR of the project, and therefore the easiest way to find
+	 * said jar is to take the class's URL, using getResource.
 	 */
 	public static BufferedImage loadImage(String pathFromSrc, Class classInProject, double width, double height) {
 		Image image;
@@ -55,6 +61,37 @@ public class ImageUtil {
 		Graphics g = newImage.getGraphics();
 		g.drawImage(image, 0, 0, null);
 		return newImage;
+	}
+	
+	/*
+	 * Loads an image outside of the JAR file. Returns a blank 100x100 BufferedImage if image is not found.
+	 * Rules for the path required are the same as defined by file system navigating.
+	 */
+	public static BufferedImage loadImageFromPath(String fullPath) {
+		BufferedImage image;
+		try {
+			image = ImageIO.read(new File(fullPath));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+		}
+		return image;
+	}
+	
+	/*
+	 * Loads an image outside of the JAR file. Returns a blank BufferedImage of size width x height
+	 * if image is not found.
+	 * Rules for the path required are the same as defined by file system navigating.
+	 */
+	public static BufferedImage loadImageFromPath(String fullPath, double width, double height) {
+		BufferedImage image;
+		try {
+			image = ImageIO.read(new File(fullPath));
+		} catch (IOException e) {
+			e.printStackTrace();
+			return new BufferedImage((int) width, (int) height, BufferedImage.TYPE_INT_ARGB);
+		}
+		return image;
 	}
 	
 	/*
@@ -92,7 +129,7 @@ public class ImageUtil {
 	}
 	
 	/*
-	 * Returns an array of all pixels with an alpha greater than 0.
+	 * Returns a 2d array of all pixels with an alpha greater than 0.
 	 * This is mainly meant to be used for collision detection.
 	 */
 	public static boolean[][] getVisiblePixels(BufferedImage image) {
@@ -106,5 +143,66 @@ public class ImageUtil {
 		}
 		//Arrays.deepToString(arr);
 		return arr;
+	}
+	
+	/*
+	 * This method takes a array of Images, and combines them together
+	 * This is used for compiling multiple images with transparency into one image.
+	 * The top image should be at the final index of the array, and the bottom image should be element 0
+	 */
+	public static BufferedImage compileImages(Image[] images, int size) {
+		BufferedImage compiledImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+		Graphics g = compiledImage.createGraphics();
+		for (int i = 0; i < images.length; i++) {
+			g.drawImage(images[i], 0, 0, null);
+		}
+		
+		return compiledImage;
+	}
+	
+	/*
+	 * Replaces all white pixels in an image with a given texture.
+	 */
+	public static BufferedImage fillWhiteWithTexture(BufferedImage image, Texture filler) {
+		for (int y = 0; y < image.getHeight(); y++) {
+			for (int x = 0; x < image.getWidth(); x++) {
+				int pixel = image.getRGB(x, y);
+				if (pixel == -1) {
+					image.setRGB(x, y, filler.getColor().getRGB());
+				}
+			}
+		}
+		return image;
+	}
+	
+	/*
+	 * Replaces all white pixels in an image with a given texture.
+	 */
+	public static BufferedImage fillWhiteWithColor(BufferedImage image, Color color) {
+		for (int y = 0; y < image.getHeight(); y++) {
+			for (int x = 0; x < image.getWidth(); x++) {
+				int pixel = image.getRGB(x, y);
+				if (pixel == -1) {
+					image.setRGB(x, y, color.getRGB());
+				}
+			}
+		}
+		return image;
+	}
+	
+	/*
+	 * Replaces a given color with a texture in an image. Useful for templates with
+	 * multiple colors that need to be replaced (i.e. both white and black should be changed)
+	 */
+	public static BufferedImage fillColorWithTexture(BufferedImage image, Color target, Texture filler) {
+		for (int y = 0; y < image.getHeight(); y++) {
+			for (int x = 0; x < image.getWidth(); x++) {
+				int pixel = image.getRGB(x, y);
+				if (pixel == target.getRGB()) {
+					image.setRGB(x, y, filler.getColor().getRGB());
+				}
+			}
+		}
+		return image;
 	}
 }
