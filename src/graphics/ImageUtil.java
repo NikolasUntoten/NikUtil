@@ -1,9 +1,7 @@
-/* Nikolas Gaub
- * 
- * This is a utility class containing methods which load and/or manipulate images.
- * This should really be built into java already. Or at least standardized.
+/* 
+ * Written by Nikolas Gaub, 2016
  */
-
+package graphics;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -16,6 +14,11 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+
+/*
+ * This is a utility class containing methods which load and/or manipulate images.
+ * This should really be built into java already. Or at least standardized.
+ */
 
 public class ImageUtil {
 	

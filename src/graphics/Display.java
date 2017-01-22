@@ -1,10 +1,9 @@
-
+/*
+ * Written by Nikolas Gaub, 2016
+ */
+package graphics;
 
 import javax.swing.*;
-
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.event.KeyEvent;
 import java.util.*;
 
 /*  Easy to use™ utility for displaying and changing panels in a JFrame
@@ -247,5 +246,13 @@ public class Display {
 		String tag = "tag: " + key + onRelease;
 		inMap.put(KeyStroke.getKeyStroke(key, 0, onRelease), tag);
 		actMap.put(tag, action);
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return width + "wide, " + height + "high : " + "in menu mode: " + inMenuMode + " : Frame info: " + frame.toString();
 	}
 }
