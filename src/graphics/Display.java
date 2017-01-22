@@ -1,4 +1,4 @@
-/*
+/**
  * Written by Nikolas Gaub, 2016
  */
 package graphics;
@@ -6,7 +6,7 @@ package graphics;
 import javax.swing.*;
 import java.util.*;
 
-/*  Easy to use™ utility for displaying and changing panels in a JFrame
+/*  Easy to use™ Free™ utility for displaying and changing panels in a JFrame
  *  Contains only one main panel, and overlays other panels on top of main panel.
  *  This limit allows for simpler use.
  *  
@@ -18,37 +18,57 @@ import java.util.*;
  */
 
 public class Display {
-	//main frame component used throughout display
+	/*
+	 * main frame component used throughout display
+	 */
 	private JFrame frame;
 	
-	//panel that is displayed by default, at the bottom layer. 
-	//used for the main game world and things like that.
+	/*
+	 * panel that is displayed by default, at the bottom layer. 
+	 * used for the main game world and things like that.
+	 */
 	private JPanel mainPanel;
 	
-	//overlay panels keeps track of all stacked panels on screen for easy
-	//adding and removal
+	/*
+	 * overlay panels keeps track of all stacked panels on screen for easy
+	 * adding and removal
+	 */
 	private Stack<JPanel> overlayPanels;
 	
-	//contains all stacked panels and displays as one pane
+	/*
+	 * contains all stacked panels and displays as one pane
+	 */
 	private JLayeredPane overlay;
 	
-	//menu panel for menu mode functionality.
+	/*
+	 * menu panel for menu mode functionality.
+	 */
 	private JPanel menu;
 	
-	//boolean to keep track of menu mode state
+	/*
+	 * boolean to keep track of menu mode state
+	 */
 	private boolean inMenuMode;
 	
-	//boolean to allow the stopping of refresh
+	/*
+	 * boolean to allow the stopping of refresh
+	 */
 	private boolean refresh;
 	
-	//width and height of panel, does not include border.
+	/*
+	 * width and height of panel, does not include border.
+	 */
 	private int width = 1000;
 	private int height = 1000;
 	
-	//refresh rate is the times per second the frame will refresh.
+	/*
+	 * refresh rate is the times per second the frame will refresh.
+	 */
 	private static final double REFRESH_RATE = 60;
 	
-	//The time between each refresh of the frame.
+	/*
+	 * The time between each refresh of the frame.
+	 */
 	private static final long SLEEP_MILLIS = (long) (1000 / REFRESH_RATE);
 	
 	
@@ -80,8 +100,10 @@ public class Display {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	//creates a JLayeredPane that is used to show multiple overlays, 
-	//with mainPanel being the bottom.
+	/*
+	 * creates a JLayeredPane that is used to show multiple overlays, 
+	 * with mainPanel being the bottom.
+	 */
 	private void createOverlay() {
 		overlay = new JLayeredPane();
 		overlay.setVisible(true);
@@ -90,15 +112,19 @@ public class Display {
 		frame.getContentPane().add(overlay);
 	}
 	
-	//Starts the refresh and makes frame visible.
+	/*
+	 * Starts the refresh and makes frame visible.
+	 */
 	public void start() {
 		refresh = true;
 		createRefresh();
 		frame.setVisible(true);
 	}
 	
-	//Creates a thread that repeats until the window is closed.
-	//Repaints and revalidates frame, then sleeps for a given time.
+	/*
+	 * Creates a thread that repeats until the window is closed.
+	 * Repaints and revalidates frame, then sleeps for a given time.
+	 */
 	private void createRefresh() {
 		Thread t = new Thread() {
 			@Override
@@ -134,7 +160,9 @@ public class Display {
 		frame.setEnabled(false);
 	}
 	
-	//toggles maximization
+	/*
+	 * toggles maximization
+	 */
 	public void toggleMaximize() {
 		if (isMaximized()) {
 			minimize();
@@ -143,14 +171,18 @@ public class Display {
 		}
 	}
 	
-	//Maximizes frame
+	/*
+	 * Maximizes frame
+	 */
 	public void maximize() {
 		if (!isMaximized()) {
 			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}
 	}
 	
-	//minimizes frame
+	/*
+	 * minimizes frame
+	 */
 	public void minimize() {
 		if (isMaximized()) {
 			frame.setExtendedState(JFrame.NORMAL);
@@ -158,19 +190,25 @@ public class Display {
 		}
 	}
 	
-	//checks if the frame is maximized
+	/*
+	 * checks if the frame is maximized
+	 */
 	private boolean isMaximized() {
 		return frame.getExtendedState() != JFrame.MAXIMIZED_BOTH;
 	}
 	
-	//adds a panel to the top of the overlay
+	/*
+	 * adds a panel to the top of the overlay
+	 */
 	public void addOverlay(JPanel panel) {
 		overlayPanels.push(panel);
 		overlay.add(panel, overlayPanels.size());
 		overlay.moveToFront(panel);
 	}
 	
-	//removes a panel from the overlay.
+	/*
+	 * removes a panel from the overlay.
+	 */
 	public void removeTopOverlay() {
 		if (overlayPanels.size() > 1) {
 			JPanel trash = overlayPanels.pop();
@@ -194,14 +232,18 @@ public class Display {
 		restackPanels();
 	}
 	
-	//Switches to main panel from menu mode.
+	/*
+	 * Switches to main panel from menu mode.
+	 */
 	public void switchToMainPanel() {
 		if (inMenuMode) {
 			inMenuMode = false;
 			overlay.setVisible(true);
 		}
 	}
-	//switches to menu from main panel
+	/*
+	 * switches to menu from main panel
+	 */
 	public void switchToMenu(JPanel initialMenu) {
 		menu = initialMenu;
 		if (!inMenuMode) {
@@ -233,13 +275,13 @@ public class Display {
 		
 		for (JPanel p : overlayPanels) {
 			overlay.add(p);
-			//System.out.println("index of overlay = " + overlay.getIndexOf(p));
 		}
 		overlay.add(mainPanel);
-		//System.out.println("index of main = " + overlay.getIndexOf(mainPanel));
 	}
 	
-	//Allows the adding of actions to the frame.
+	/*
+	 * Allows the adding of actions to the frame.
+	 */
 	private InputMap inMap;
 	private ActionMap actMap;
 	public void addAction(Action action, int key, boolean onRelease) {
